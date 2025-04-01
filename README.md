@@ -5,7 +5,7 @@ A fun, interactive web-based tool to create custom text animations using HTML, C
 **Try it live here:** 👉 [**https://kavindus1.github.io/Text-Animator**](https://kavindus1.github.io/Text-Animator) 👈
 
 
-[download (4)](https://github.com/user-attachments/assets/7ed81312-6cde-4a54-9a40-a4322336fbbe)
+![download (4)](https://github.com/user-attachments/assets/7ed81312-6cde-4a54-9a40-a4322336fbbe)
 
 ![pixlo_elasticPop](https://github.com/user-attachments/assets/747a7aae-109c-411e-b56f-89e277f4946b)
 
