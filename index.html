@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixlo Animation Studio Pro</title>
+
+    <!-- Google Fonts (Massive List - Add/Remove as needed) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Montserrat:wght@400;700;900&family=Lobster&family=Pacifico&family=Bungee+Inline&family=Press+Start+2P&family=Merriweather:wght@400;700;900&family=Nunito:wght@400;700;900&family=Oswald:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Raleway:wght@400;700;900&family=Zilla+Slab:wght@400;700&family=Dancing+Script:wght@400;700&family=Anton&family=Archivo+Black&family=Abril+Fatface&family=Comfortaa:wght@400;700&family=Creepster&family=Faster+One&family=Fredoka+One&family=Fugaz+One&family=Graduate&family=Kanit:wght@400;700;900&family=Limelight&family=Major+Mono+Display&family=Playfair+Display:wght@400;700;900&family=Righteous&family=Russo+One&family=Secular+One&family=Shrikhand&family=Six+Caps&family=Special+Elite&family=Syncopate:wght@400;700&family=Ultra&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Theme Variables */
+            --bg-color: #1a1d2e;
+            --logo-color: #00eaff;
+            --logo-glow-color: rgba(0, 234, 255, 0.6);
+            --logo-font-family: 'Poppins', sans-serif;
+            --logo-font-weight: 700;
+            --logo-font-size: clamp(2.5rem, 10vw, 7rem);
+            --logo-letter-spacing: 0em;
+            --apply-text-effects: 1; /* 1 for enabled, 0 for disabled */
+
+            --controls-bg: #25293a;
+            --fieldset-border: #40455a;
+            --text-color: #e0e4f0;
+            --label-color: #a0a5ba;
+            --input-bg: #35394a;
+            --button-bg: #4f546a;
+            --button-hover-bg: #00eaff;
+            --button-hover-text: #1a1d2e;
+            --select-bg: var(--input-bg);
+            --export-button-bg: #28a745;
+            --export-button-hover-bg: #218838;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-color);
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-color);
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- Logo Area --- */
+        .logo-display-area {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 250px;
+            padding: 40px 20px;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            perspective: 1000px;
+            display: inline-block;
+            text-align: center;
+            font-family: var(--logo-font-family);
+            font-weight: var(--logo-font-weight);
+            font-size: var(--logo-font-size);
+            letter-spacing: var(--logo-letter-spacing);
+            transition: letter-spacing 0.1s ease;
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            color: var(--logo-color);
+            transform-origin: 50% 50%;
+            will-change: transform, opacity, color, filter;
+            transition: color 0.5s ease, font-family 0.3s ease;
+            text-shadow: none; /* Base: no shadow */
+            transform: translateZ(0);
+        }
+        /* Conditional Text Effects */
+        body.text-effects-enabled .letter {
+             text-shadow:
+               0 0 4px var(--logo-glow-color),
+               0 0 8px var(--logo-glow-color);
+        }
+
+         .letter.space {
+            opacity: 1;
+            width: 0.3em;
+            text-shadow: none !important; /* Ensure spaces never have shadow */
+         }
+
+         /* --- Controls Panel --- */
+        .controls {
+            background-color: var(--controls-bg);
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); /* Wider minmax */
+            gap: 15px 25px; /* Row, Column gap */
+            width: 100%;
+            max-width: 1500px; /* Wider max */
+            box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.35);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        fieldset {
+            border: 1px solid var(--fieldset-border);
+            border-radius: 8px;
+            padding: 20px; /* More padding */
+            margin: 0;
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 18px 22px; /* More gap */
+        }
+        fieldset.text-anim-group { grid-column: span 3; }
+        fieldset.appearance-group { grid-column: span 3; }
+
+         @media (max-width: 1300px) {
+             fieldset.text-anim-group, fieldset.appearance-group {
+                 grid-column: span 2;
+             }
+         }
+        @media (max-width: 768px) {
+             fieldset, fieldset.text-anim-group, fieldset.appearance-group {
+                 grid-column: 1 / -1;
+             }
+        }
+
+
+        legend {
+            padding: 0 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Slider - No value display */
+        .control-group.range-group {
+             flex-direction: row;
+             align-items: center;
+             gap: 10px;
+        }
+        .control-group.range-group label { margin-bottom: 0; flex-shrink: 0; }
+        .control-group.range-group input[type="range"] {
+            flex-grow: 1; padding: 0; height: 8px; cursor: pointer;
+            accent-color: var(--button-hover-bg);
+        }
+        /* Hide the removed value display's style */
+        /* .control-group .value-display { display: none; } */
+
+         /* Checkbox styling */
+        .control-group.checkbox-group {
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px; /* Align better with other controls */
+        }
+         .control-group.checkbox-group input[type="checkbox"] {
+             width: 16px;
+             height: 16px;
+             cursor: pointer;
+             accent-color: var(--button-hover-bg);
+         }
+         .control-group.checkbox-group label {
+             margin-bottom: 0;
+             font-weight: normal; /* Less emphasis */
+             color: var(--label-color);
+         }
+
+
+        .controls label {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--label-color);
+            display: block;
+        }
+
+        .controls input[type="text"],
+        .controls select {
+            padding: 10px 12px;
+            font-size: 1em;
+            border: 1px solid var(--fieldset-border);
+            border-radius: 5px;
+            background-color: var(--select-bg);
+            color: var(--text-color);
+            font-family: inherit;
+            width: 100%;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+         .controls input[type="text"]:focus,
+         .controls select:focus {
+             outline: none;
+             border-color: var(--button-hover-bg);
+             background-color: #40455a;
+         }
+        .controls select { cursor: pointer; }
+
+        /* Buttons Area */
+        .buttons-container {
+            grid-column: 1 / -1; /* Span full width */
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+        }
+
+        #apply-btn, #export-mp4-btn {
+             /* Take equal space or based on content */
+            flex: 1 1 auto; /* Allow shrinking and growing */
+            padding: 14px 20px; /* Slightly less padding */
+            font-size: 1.1em; /* Adjusted size */
+            font-weight: 700;
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        #apply-btn { background-color: var(--button-bg); }
+        #apply-btn:hover { background-color: var(--button-hover-bg); color: var(--button-hover-text); }
+        #apply-btn:active { transform: scale(0.98); }
+
+        #export-mp4-btn { background-color: var(--export-button-bg); }
+        #export-mp4-btn:hover { background-color: var(--export-button-hover-bg); }
+        #export-mp4-btn:active { transform: scale(0.98); }
+        #export-mp4-btn:disabled {
+            background-color: #5a6268;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        /* Hidden Canvas for Export */
+        #export-canvas {
+            display: none; /* Hidden */
+            /* or position absolutely off-screen if needed for debugging */
+            /* position: absolute; left: -9999px; top: -9999px; */
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Animation Preview Area -->
+    <div class="logo-display-area">
+        <div class="logo-container" id="logo-container">
+            <!-- Logo SPANs generated by JS -->
+        </div>
+    </div>
+
+    <!-- Hidden Canvas for Export -->
+    <canvas id="export-canvas"></canvas>
+
+    <!-- Controls Panel -->
+    <div class="controls">
+        <fieldset class="text-anim-group">
+            <legend>Text & Animation</legend>
+            <div class="control-group" style="grid-column: 1 / -1;">
+                <label for="text-input">Logo Text:</label>
+                <input type="text" id="text-input" value="Pixlo">
+            </div>
+            <div class="control-group">
+                <label for="animation-select">Animation:</label>
+                <select id="animation-select"> </select>
+            </div>
+             <div class="control-group range-group">
+                <label for="spacing-slider">Spacing:</label>
+                <input type="range" id="spacing-slider" min="-0.1" max="1" step="0.01" value="0">
+                <!-- <span class="value-display" id="spacing-value-display">0.00em</span> REMOVED -->
+            </div>
+        </fieldset>
+
+        <fieldset class="appearance-group">
+             <legend>Appearance</legend>
+            <div class="control-group">
+                <label for="font-select">Font:</label>
+                <select id="font-select"> </select>
+            </div>
+            <div class="control-group">
+                <label for="text-color-select">Text Color:</label>
+                <select id="text-color-select"> </select>
+            </div>
+            <div class="control-group">
+                <label for="bg-color-select">Background:</label>
+                <select id="bg-color-select"> </select>
+            </div>
+             <!-- Text Effects Toggle -->
+             <div class="control-group checkbox-group" style="grid-column: 1 / -1; justify-content: center;">
+                <input type="checkbox" id="toggle-effects" checked>
+                <label for="toggle-effects">Enable Text Effects (Glow/Shadow)</label>
+            </div>
+        </fieldset>
+
+        <!-- Buttons Container -->
+        <div class="buttons-container">
+             <button id="apply-btn">Apply & Animate</button>
+             <button id="export-mp4-btn">Export MP4</button>
+        </div>
+
+        <div style="grid-column: 1 / -1; font-size: 0.8em; text-align: center; color: var(--label-color); margin-top: 5px;">
+             Note: MP4 export uses canvas rendering and may simplify complex animations. APNG export is not available client-side.
+        </div>
+    </div>
+
+
+    <!-- Include Anime.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <script>
+        // --- JAVASCRIPT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const textInput = document.getElementById('text-input');
+            const animationSelect = document.getElementById('animation-select');
+            const fontSelect = document.getElementById('font-select');
+            const textColorSelect = document.getElementById('text-color-select');
+            const bgColorSelect = document.getElementById('bg-color-select');
+            const spacingSlider = document.getElementById('spacing-slider');
+            // const spacingValueDisplay = document.getElementById('spacing-value-display'); // REMOVED
+            const effectsToggle = document.getElementById('toggle-effects'); // NEW
+            const applyButton = document.getElementById('apply-btn');
+            const exportMp4Button = document.getElementById('export-mp4-btn'); // NEW
+            const logoContainer = document.getElementById('logo-container');
+            const exportCanvas = document.getElementById('export-canvas'); // NEW
+            const ctx = exportCanvas.getContext('2d'); // NEW
+            const root = document.documentElement;
+            const body = document.body; // For toggling class
+
+            let currentAnimation = null;
+            let isRecording = false; // NEW: Recording flag
+
+            // --- Presets Data (EXPANDED) ---
+
+            const animationPresets = {
+                // Basic & Staggered
+                'staggerFadeUp': { name: 'Stagger Fade Up', fn: animateStaggerFadeUp, canvasFn: canvasAnimateFadeUp },
+                'staggerFadeDown': { name: 'Stagger Fade Down', fn: animateStaggerFadeDown, canvasFn: canvasAnimateFadeDown },
+                'staggerFadeLeft': { name: 'Stagger Fade Left', fn: animateStaggerFadeLeft, canvasFn: canvasAnimateFadeLeft },
+                'staggerFadeRight': { name: 'Stagger Fade Right', fn: animateStaggerFadeRight, canvasFn: canvasAnimateFadeRight },
+                'centerExpand': { name: 'Expand From Center', fn: animateCenterExpand, canvasFn: canvasAnimateScaleIn },
+                'typing': { name: 'Typing Effect', fn: animateTyping, canvasFn: canvasAnimateTyping },
+                'wave': { name: 'Wave Motion', fn: animateWave, canvasFn: canvasAnimateWave },
+                'fadeIn': { name: 'Fade In (All)', fn: animateFadeIn, canvasFn: canvasAnimateFadeIn }, // Simpler fade
+
+                // Rotation & 3D
+                'flipInX': { name: '3D Flip In X', fn: animateFlipInX, canvasFn: canvasAnimateSimpleRotateX }, // Simplified Canvas
+                'flipInY': { name: '3D Flip In Y', fn: animateFlipInY, canvasFn: canvasAnimateSimpleRotateY }, // Simplified Canvas
+                'spinIn': { name: 'Spin In (Z)', fn: animateSpinIn, canvasFn: canvasAnimateSimpleRotateZ }, // Simplified Canvas
+                'spinIn3D': { name: 'Spin In 3D (Y)', fn: animateSpinIn3D, canvasFn: canvasAnimateSimpleRotateY },// Simplified Canvas
+                'rotateCascade': { name: 'Rotate Cascade', fn: animateRotateCascade, canvasFn: canvasAnimateSimpleRotateZ },// Simplified Canvas
+                'hingeIn': { name: 'Hinge In', fn: animateHingeIn, canvasFn: canvasAnimateSimpleRotateZ },// Simplified Canvas
+
+                // Elastic & Bounce
+                'elasticPop': { name: 'Elastic Pop', fn: animateElasticPop, canvasFn: canvasAnimateScaleInBounce }, // Simplified Canvas
+                'dropBounce': { name: 'Drop & Bounce', fn: animateDropBounce, canvasFn: canvasAnimateFadeDown }, // Simplified Canvas
+                'jello': { name: 'Jello Wobble', fn: animateJello, canvasFn: canvasAnimateFadeIn }, // Simplified Canvas (complex to replicate)
+                'rubberBand': { name: 'Rubber Band Stretch', fn: animateRubberBand, canvasFn: canvasAnimateScaleIn },// Simplified Canvas
+
+                // Complex & Effects
+                'scatterGather': { name: 'Scatter & Gather', fn: animateScatterGather, canvasFn: canvasAnimateScatterGather }, // Basic Canvas Version
+                'colorSweep': { name: 'Color Sweep', fn: animateColorSweep, canvasFn: canvasAnimateFadeIn }, // Simplified Canvas
+                'blurIn': { name: 'Blur In', fn: animateBlurIn, canvasFn: canvasAnimateFadeIn}, // No easy canvas blur anim
+                'slideInOut': { name: 'Slide In/Out', fn: animateSlideInOut, canvasFn: canvasAnimateFadeInOut}, // Simplified Canvas
+                'randomLetters': { name: 'Random Letters', fn: animateRandomLetters, canvasFn: canvasAnimateTyping }, // Simplified Canvas
+                'focusIn': { name: 'Focus In (Scale+Blur)', fn: animateFocusIn, canvasFn: canvasAnimateScaleIn}, // Simplified Canvas
+                'flash': { name: 'Flash', fn: animateFlash, canvasFn: canvasAnimateFlash},
+                'pulse': { name: 'Pulse', fn: animatePulse, canvasFn: canvasAnimatePulse},
+                'swing': { name: 'Swing', fn: animateSwing, canvasFn: canvasAnimateFadeIn }, // Simplified Canvas
+                'tada': { name: 'Tada!', fn: animateTada, canvasFn: canvasAnimateScaleInBounce }, // Simplified Canvas
+                'neonFlicker': { name: 'Neon Flicker', fn: animateNeonFlicker, canvasFn: canvasAnimateFlash } // New
+            };
+
+            const fontPresets = {
+                // Sans-Serif
+                "'Poppins', sans-serif": { name: "Poppins", weight: 700 },
+                "'Montserrat', sans-serif": { name: "Montserrat", weight: 700 },
+                "'Nunito', sans-serif": { name: "Nunito", weight: 700 },
+                "'Raleway', sans-serif": { name: "Raleway", weight: 700 },
+                "'Oswald', sans-serif": { name: "Oswald", weight: 700 },
+                "'Anton', sans-serif": { name: "Anton", weight: 400 },
+                "'Archivo Black', sans-serif": { name: "Archivo Black", weight: 400 },
+                "'Kanit', sans-serif": { name: "Kanit", weight: 700 },
+                "'Russo One', sans-serif": { name: "Russo One", weight: 400 },
+                "'Secular One', sans-serif": { name: "Secular One", weight: 400 },
+                "'Syncopate', sans-serif": { name: "Syncopate", weight: 700 },
+                 "Arial, sans-serif": { name: "Arial", weight: 700 },
+                 "Verdana, sans-serif": { name: "Verdana", weight: 700 },
+
+                // Serif
+                "'Merriweather', serif": { name: "Merriweather", weight: 700 },
+                "'Zilla Slab', serif": { name: "Zilla Slab", weight: 700 },
+                "'Playfair Display', serif": { name: "Playfair Display", weight: 700 },
+                "'Abril Fatface', serif": { name: "Abril Fatface", weight: 400 },
+                "'Ultra', serif": { name: "Ultra", weight: 400 },
+                 "'Times New Roman', serif": { name: "Times New Roman", weight: 700 },
+                 "Georgia, serif": { name: "Georgia", weight: 700 },
+
+                // Monospace
+                "'Roboto Mono', monospace": { name: "Roboto Mono", weight: 700 },
+                "'Source Code Pro', monospace": { name: "Source Code Pro", weight: 700 },
+                "'Major Mono Display', monospace": { name: "Major Mono Display", weight: 400 },
+                "'VT323', monospace": { name: "VT323", weight: 400 }, // Pixel
+                 "'Courier New', monospace": { name: "Courier New", weight: 700 },
+
+                // Display / Script / Other
+                "'Lobster', cursive": { name: "Lobster", weight: 400 },
+                "'Pacifico', cursive": { name: "Pacifico", weight: 400 },
+                "'Dancing Script', cursive": { name: "Dancing Script", weight: 700 },
+                "'Bungee Inline', cursive": { name: "Bungee Inline", weight: 400 },
+                "'Press Start 2P', cursive": { name: "Press Start 2P", weight: 400 }, // Pixel
+                "'Comfortaa', cursive": { name: "Comfortaa", weight: 700 },
+                "'Creepster', cursive": { name: "Creepster", weight: 400 }, // Horror
+                "'Faster One', cursive": { name: "Faster One", weight: 400 }, // Speed
+                "'Fredoka One', cursive": { name: "Fredoka One", weight: 400 }, // Rounded
+                "'Fugaz One', cursive": { name: "Fugaz One", weight: 400 }, // Italic Display
+                "'Graduate', cursive": { name: "Graduate", weight: 400 }, // Collegiate
+                "'Limelight', cursive": { name: "Limelight", weight: 400 }, // Art Deco
+                "'Righteous', cursive": { name: "Righteous", weight: 400 },
+                "'Shrikhand', cursive": { name: "Shrikhand", weight: 400 }, // Bold Script
+                "'Six Caps', sans-serif": { name: "Six Caps", weight: 400 }, // Condensed Tall
+                "'Special Elite', cursive": { name: "Special Elite", weight: 400 }, // Typewriter
+            };
+
+            const colorPresets = {
+                // High Contrast Dark BG
+                'cyan_dark': { name: "Cyan / Dark Blue", bg: "#1a1d2e", text: "#00eaff", glow: "rgba(0, 234, 255, 0.6)" },
+                'lime_black': { name: "Lime / Black", bg: "#000000", text: "#32cd32", glow: "rgba(50, 205, 50, 0.6)" },
+                'gold_maroon': { name: "Gold / Maroon", bg: "#800000", text: "#ffd700", glow: "rgba(255, 215, 0, 0.5)" },
+                'orange_navy': { name: "Orange / Navy", bg: "#000080", text: "#ffa500", glow: "rgba(255, 165, 0, 0.5)" },
+                'pink_purple': { name: "Pink / Purple", bg: "#4a0d66", text: "#ff69b4", glow: "rgba(255, 105, 180, 0.5)" },
+                'electric_blue': { name: "Electric Blue / Dark", bg: "#0f0f2e", text: "#0077ff", glow: "rgba(0, 119, 255, 0.6)" },
+                'neon_green': { name: "Neon Green / Deep Grey", bg: "#222222", text: "#39ff14", glow: "rgba(57, 255, 20, 0.6)" },
+                'red_grey': { name: "Red / Grey", bg: "#444444", text: "#ff1111", glow: "rgba(255, 17, 17, 0.6)" },
+                'amber_dark': { name: "Amber / Dark", bg: "#111", text: "#FFBF00", glow: "rgba(255, 191, 0, 0.5)" },
+                'ice_blue': { name: "Ice Blue / Deep Blue", bg: "#000030", text: "#afeeee", glow: "rgba(175, 238, 238, 0.5)" },
+
+                // High Contrast Light BG
+                'mono_light': { name: "Black / White", bg: "#f5f5f5", text: "#111111", glow: "rgba(51, 51, 51, 0.3)" },
+                'blue_light_grey': { name: "Blue / Light Grey", bg: "#e8e8e8", text: "#005f99", glow: "rgba(0, 95, 153, 0.4)" },
+                'purple_offwhite': { name: "Purple / Off-White", bg: "#faf0e6", text: "#8a2be2", glow: "rgba(138, 43, 226, 0.4)" },
+                'black_yellow': { name: "Black / Yellow", bg: "#fffacd", text: "#000000", glow: "rgba(50, 50, 0, 0.4)" }, // LemonChiffon BG
+                'teal_cream': { name: "Teal / Cream", bg: "#f5f5dc", text: "#008080", glow: "rgba(0, 128, 128, 0.4)" },
+                'red_sand': { name: "Red / Sand", bg: "#f4a460", text: "#b22222", glow: "rgba(178, 34, 34, 0.4)" },
+
+                // Themed & Others
+                'pastel_dream': { name: "Pastel Dream", bg: "#fdecef", text: "#a0d8ef", glow: "rgba(160, 216, 239, 0.5)" },
+                'forest': { name: "Forest", bg: "#228b22", text: "#fff8dc", glow: "rgba(255, 248, 220, 0.4)" },
+                'ocean': { name: "Ocean", bg: "#1e90ff", text: "#f0ffff", glow: "rgba(240, 255, 255, 0.5)" },
+                'sunset': { name: "Sunset", bg: "#ff7f50", text: "#483d8b", glow: "rgba(72, 61, 139, 0.5)" },
+                'greyscale': { name: "Greyscale", bg: "#cccccc", text: "#333333", glow: "rgba(51, 51, 51, 0.3)" },
+                'vaporwave': { name: "Vaporwave", bg: "#ff71ce", text: "#01cdfe", glow: "rgba(1, 205, 254, 0.6)" },
+                'cyberpunk': { name: "Cyberpunk", bg: "#0c0c1c", text: "#ffdd00", glow: "rgba(255, 221, 0, 0.6)" },
+                'white_teal': { name: "White / Teal", bg: "#008080", text: "#ffffff", glow: "rgba(255, 255, 255, 0.4)" },
+                'lavender_blush': { name: "Lavender Blush", bg: "#fff0f5", text: "#9370db", glow: "rgba(147, 112, 219, 0.4)" },
+                'mint_chocolate': { name: "Mint Chocolate", bg: "#3d2b1f", text: "#98ff98", glow: "rgba(152, 255, 152, 0.5)" },
+                'solarized_dark': { name: "Solarized Dark", bg: "#002b36", text: "#93a1a1", glow: "rgba(147, 161, 161, 0.4)" },
+                'solarized_light': { name: "Solarized Light", bg: "#fdf6e3", text: "#586e75", glow: "rgba(88, 110, 117, 0.4)" },
+                'dracula': { name: "Dracula", bg: "#282a36", text: "#f8f8f2", glow: "rgba(248, 248, 242, 0.4)" },
+                'gruvbox_dark': { name: "Gruvbox Dark", bg: "#282828", text: "#ebdbb2", glow: "rgba(235, 219, 178, 0.4)" },
+                 'paper': { name: "Paper", bg: "#f9f9f0", text: "#444", glow: "rgba(68, 68, 68, 0.3)" },
+                 'matrix': { name: "Matrix", bg: "#000500", text: "#00ff41", glow: "rgba(0, 255, 65, 0.6)" },
+            };
+
+            // --- DOM Animation Functions --- (Keep all DOM functions, add new ones)
+            function animateStaggerFadeUp() { return anime({targets:'.letter:not(.space)',translateY:[50,0],opacity:[0,1],easing:'easeOutExpo',duration:1200,delay:anime.stagger(150),});}
+            function animateFlipInX() { anime.set('.letter:not(.space)',{transformOrigin:'50% 50% -20px', backfaceVisibility: 'hidden'});return anime({targets:'.letter:not(.space)',opacity:[0,1],translateZ:[-50,0],rotateX:[-90,0],duration:1500,easing:'easeOutExpo',delay:anime.stagger(120),complete:()=>anime.set('.letter:not(.space)',{transformOrigin:'50% 50%', backfaceVisibility: 'visible'})});}
+            function animateElasticPop() { return anime({targets:'.letter:not(.space)',scale:[0.5,1],opacity:[0,1],translateZ:0,easing:'easeOutElastic(1, .6)',duration:1800,delay:anime.stagger(100),});}
+            function animateDropBounce() { return anime({targets:'.letter:not(.space)',translateY:[-150,0],opacity:[0,1],easing:'easeOutBounce',duration:1500,delay:anime.stagger(130),});}
+            function animateSpinIn() { return anime({targets:'.letter:not(.space)',rotateZ:[-360,0],scale:[0.1,1],opacity:[0,1],easing:'easeInOutSine',duration:1600,delay:anime.stagger(100,{from:'last'}),});}
+            function animateCenterExpand() { return anime({targets:'.letter:not(.space)',scale:[0,1],opacity:[0,1],easing:'easeOutExpo',duration:1300,delay:anime.stagger(150,{from:'center'}),});}
+            function animateTyping() { return anime({targets:'.letter:not(.space)',opacity:[0,1],easing:'steps(1)',duration:50,delay:anime.stagger(100),});}
+            function animateWave() { return anime({targets:'.letter:not(.space)',translateY:(el,i)=>(i%2===0?[-30,0]:[30,0]),opacity:[0,1],easing:'easeInOutSine',duration:1400,delay:anime.stagger(100),});}
+            function animateScatterGather() { anime.set('.letter:not(.space)',{translateX:()=>anime.random(-150,150),translateY:()=>anime.random(-80,80),scale:0,rotateZ:()=>anime.random(-60,60),opacity:0});return anime({targets:'.letter:not(.space)',translateX:0,translateY:0,scale:1,rotateZ:0,opacity:1,easing:'easeOutExpo',duration:1500,delay:anime.stagger(80),});}
+            function animateColorSweep() { const startColor='#FFFFFF'; const endColor=getComputedStyle(root).getPropertyValue('--logo-color').trim(); return anime({targets:'.letter:not(.space)',translateY:[30,0],opacity:[0,1],color:[startColor,endColor],easing:'easeOutCirc',duration:1300,delay:anime.stagger(150),});}
+            function animateRotateCascade() { anime.set('.letter:not(.space)',{transformOrigin:'0% 100%'});return anime({targets:'.letter:not(.space)',rotateZ:[-90,0],translateY:[30,0],opacity:[0,1],easing:'easeInOutCubic',duration:1400,delay:anime.stagger(100),complete:()=>anime.set('.letter:not(.space)',{transformOrigin:'50% 50%'})});}
+            function animateBlurIn() { anime.set('.letter:not(.space)',{filter:'blur(15px)',opacity:0});return anime({targets:'.letter:not(.space)',filter:['blur(15px)','blur(0px)'],opacity:[0,1],easing:'linear',duration:1000,delay:anime.stagger(120)}); } // Filter reset is in resetLetters
+            function animateSlideInOut() { const timeline=anime.timeline({easing:'easeOutExpo'});timeline.add({targets:'.letter:not(.space)',translateX:[-window.innerWidth/4,0],opacity:[0,1],duration:1000,delay:anime.stagger(80)}).add({targets:'.letter:not(.space)',translateX:[0,window.innerWidth/4],opacity:[1,0],duration:800,delay:anime.stagger(60,{direction:'reverse'}),offset:'+=500'}); return timeline;}
+            function animateJello() { anime.set('.letter:not(.space)', { opacity: 1 }); return anime({targets:'.letter:not(.space)',skewX:[{value:anime.stagger([-25,25]),duration:150,delay:anime.stagger(50,{start:100})},{value:0,duration:500,easing:'easeOutElastic(1, .5)'}],skewY:[{value:anime.stagger([15,-15]),duration:150,delay:anime.stagger(50,{start:100})},{value:0,duration:500,easing:'easeOutElastic(1, .5)'}],scale:[{value:anime.stagger([1.1,0.95]),duration:150,delay:anime.stagger(50,{start:100})},{value:1,duration:500,easing:'easeOutElastic(1, .5)'}],}); } // Skew reset in resetLetters
+            function animateRandomLetters() { const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?#@";const targetSpans=logoContainer.querySelectorAll('.letter:not(.space)');const originalTexts=Array.from(targetSpans).map(span=>span.textContent);anime.set(targetSpans,{opacity:1});return anime({targets:targetSpans,duration:800,delay:anime.stagger(60),easing:'easeInOutQuad',update:function(anim){targetSpans.forEach((span,index)=>{if(anim.progress<99){if(Math.random()<(1-(anim.progress/100))*0.8+0.1){const randomChar=letters[Math.floor(Math.random()*letters.length)];span.textContent=randomChar;}}else{/*Ensure final text in complete*/}});},complete:function(){targetSpans.forEach((span,index)=>{span.textContent=originalTexts[index];});}}); }
+            function animateStaggerFadeDown() { return anime({targets:'.letter:not(.space)',translateY:[-50,0],opacity:[0,1],easing:'easeOutExpo',duration:1200,delay:anime.stagger(150),});}
+            function animateStaggerFadeLeft() { return anime({targets:'.letter:not(.space)',translateX:[50,0],opacity:[0,1],easing:'easeOutExpo',duration:1200,delay:anime.stagger(150),});}
+            function animateStaggerFadeRight() { return anime({targets:'.letter:not(.space)',translateX:[-50,0],opacity:[0,1],easing:'easeOutExpo',duration:1200,delay:anime.stagger(150),});}
+            function animateFlipInY() { anime.set('.letter:not(.space)',{transformOrigin:'50% 50% -20px', backfaceVisibility: 'hidden'});return anime({targets:'.letter:not(.space)',opacity:[0,1],translateZ:[-50,0],rotateY:[90,0],duration:1500,easing:'easeOutExpo',delay:anime.stagger(120),complete:()=>anime.set('.letter:not(.space)',{transformOrigin:'50% 50%', backfaceVisibility: 'visible'})});}
+            function animateSpinIn3D() { anime.set('.letter:not(.space)',{transformOrigin:'50% 50%'});return anime({targets:'.letter:not(.space)',rotateY:[-540,0],scale:[0.2,1],opacity:[0,1],easing:'easeInOutExpo',duration:1800,delay:anime.stagger(100),});}
+            function animateHingeIn() { anime.set('.letter:not(.space)',{transformOrigin:'top left'});return anime({targets:'.letter:not(.space)',rotateZ:[80,0],translateY:[-20,0],opacity:[0,1],easing:'easeOutBack',duration:1600,delay:anime.stagger(130),complete:()=>anime.set('.letter:not(.space)',{transformOrigin:'50% 50%'})});} // Origin reset in resetLetters
+            function animateRubberBand() { anime.set('.letter:not(.space)', { opacity: 1 }); return anime({ targets: '.letter:not(.space)', scaleX: [ { value: 1.25, duration: 100, delay: anime.stagger(50) }, { value: 0.75, duration: 100 }, { value: 1.15, duration: 100 }, { value: 1, duration: 400 } ], scaleY: [ { value: 0.75, duration: 100, delay: anime.stagger(50) }, { value: 1.25, duration: 100 }, { value: 0.85, duration: 100 }, { value: 1, duration: 400 } ], easing: 'linear', duration: 700 }); } // Scale reset in resetLetters
+            function animateFocusIn() { anime.set('.letter:not(.space)',{ filter: 'blur(10px)', scale: 1.5, opacity: 0 }); return anime({ targets: '.letter:not(.space)', filter: ['blur(10px)', 'blur(0px)'], scale: [1.5, 1], opacity: [0, 1], easing: 'easeOutCirc', duration: 1000, delay: anime.stagger(100) }); } // Filter/Scale reset in resetLetters
+            function animateFlash() { anime.set('.letter:not(.space)', { opacity: 0 }); return anime({ targets: '.letter:not(.space)', opacity: [0, 1, 0, 1], duration: 1000, easing: 'easeInOutQuad', delay: anime.stagger(150) }); }
+            function animatePulse() { anime.set('.letter:not(.space)', { opacity: 1 }); return anime({ targets: '.letter:not(.space)', scale: [1, 1.1, 1], duration: 600, easing: 'easeInOutQuad', delay: anime.stagger(100, {start: 200}) }); } // Scale reset in resetLetters
+            function animateSwing() { anime.set('.letter:not(.space)', { opacity: 1, transformOrigin: 'top center' }); return anime({ targets: '.letter:not(.space)', rotateZ: [0, 15, -10, 5, -5, 0], duration: 1000, easing: 'easeInOutQuad', delay: anime.stagger(80), complete:()=>anime.set('.letter:not(.space)',{transformOrigin:'50% 50%'}) }); } // Origin reset in resetLetters
+            function animateTada() { anime.set('.letter:not(.space)', { opacity: 1, scale: 1}); return anime({ targets: '.letter:not(.space)', scale: [1, 0.9, 1.1, 1.1, 1.1, 1], rotateZ: [0, -3, 3, -3, 3, 0], duration: 1000, easing: 'linear', delay: anime.stagger(60, {start: 100}) }); } // Scale/Rotate reset in resetLetters
+            function animateFadeIn() { return anime({targets: '.letter:not(.space)', opacity: [0, 1], duration: 1000, easing: 'linear', delay: anime.stagger(50) }); }
+            function animateNeonFlicker() {
+                anime.set('.letter:not(.space)', { opacity: 1 }); // Start visible
+                const glowColor = getComputedStyle(root).getPropertyValue('--logo-glow-color').trim();
+                const textColor = getComputedStyle(root).getPropertyValue('--logo-color').trim();
+                return anime({
+                    targets: '.letter:not(.space)',
+                    opacity: [
+                        { value: 1, duration: 50, delay: anime.stagger(30)},
+                        { value: 0.4, duration: 100 },
+                        { value: 1, duration: 80 },
+                        { value: 0.7, duration: 100 },
+                        { value: 1, duration: 150 },
+                    ],
+                     textShadow: [
+                        { value: `0 0 10px ${glowColor}, 0 0 20px ${textColor}`, duration: 50, delay: anime.stagger(30)},
+                        { value: `0 0 5px ${glowColor}`, duration: 100 },
+                        { value: `0 0 15px ${glowColor}, 0 0 30px ${textColor}`, duration: 80 },
+                        { value: `0 0 8px ${glowColor}`, duration: 100 },
+                        { value: `0 0 4px ${glowColor}, 0 0 8px ${glowColor}`, duration: 150 }, // Return to normal glow if enabled
+                     ],
+                    easing: 'linear',
+                    duration: 500 // Total time for flicker sequence
+                });
+            }
+
+
+            // --- Canvas Animation Functions (SIMPLIFIED) ---
+            // These functions return parameters for the generic canvas animation loop.
+            // They define how properties change over time (0 to 1 progress).
+            // NOTE: These are basic examples and don't replicate complex Anime.js easing/physics.
+            const getSimpleCanvasAnimParams = (duration = 1500, stagger = 150) => ({ duration, stagger });
+
+            function canvasAnimateFadeUp(letterCount) { return { type: 'fade-translate', params: { ...getSimpleCanvasAnimParams(), startY: 30, endY: 0 } }; }
+            function canvasAnimateFadeDown(letterCount) { return { type: 'fade-translate', params: { ...getSimpleCanvasAnimParams(), startY: -30, endY: 0 } }; }
+            function canvasAnimateFadeLeft(letterCount) { return { type: 'fade-translate', params: { ...getSimpleCanvasAnimParams(), startX: 30, endX: 0 } }; }
+            function canvasAnimateFadeRight(letterCount) { return { type: 'fade-translate', params: { ...getSimpleCanvasAnimParams(), startX: -30, endX: 0 } }; }
+            function canvasAnimateScaleIn(letterCount) { return { type: 'fade-scale', params: { ...getSimpleCanvasAnimParams(1300), startScale: 0, endScale: 1 } }; }
+            function canvasAnimateTyping(letterCount) { return { type: 'fade-in', params: { ...getSimpleCanvasAnimParams(letterCount * 100 + 500, 100), easing: 'steps(1)' } }; } // Longer total dur for typing
+            function canvasAnimateWave(letterCount) { return { type: 'fade-wave', params: { ...getSimpleCanvasAnimParams(), amplitude: 20 } }; }
+            function canvasAnimateFadeIn(letterCount) { return { type: 'fade-in', params: { ...getSimpleCanvasAnimParams(1000, 50) } }; }
+            function canvasAnimateSimpleRotateX(letterCount) { return { type: 'fade-rotate', params: { ...getSimpleCanvasAnimParams(), startRotX: -90, endRotX: 0 } }; } // Note: Canvas 2D doesn't truly do X/Y rotation easily
+            function canvasAnimateSimpleRotateY(letterCount) { return { type: 'fade-rotate', params: { ...getSimpleCanvasAnimParams(), startRotY: 90, endRotY: 0 } }; }  // We fake Y by scaling X
+            function canvasAnimateSimpleRotateZ(letterCount) { return { type: 'fade-rotate', params: { ...getSimpleCanvasAnimParams(), startRotZ: -180, endRotZ: 0 } }; }
+            function canvasAnimateScaleInBounce(letterCount) { return { type: 'fade-scale', params: { ...getSimpleCanvasAnimParams(1800), startScale: 0, endScale: 1, easing: 'outBounce' } }; } // Simple bounce easing idea
+             function canvasAnimateScatterGather(letterCount) { return { type: 'scatter-gather', params: { ...getSimpleCanvasAnimParams(), range: 100 } }; }
+             function canvasAnimateFadeInOut(letterCount) { return { type: 'fade-in-out', params: { ...getSimpleCanvasAnimParams(2000, 80), hold: 500 } }; } // Simple fade in then out
+             function canvasAnimateFlash(letterCount) { return { type: 'flash', params: { ...getSimpleCanvasAnimParams(1000, 150), flashes: 2 } }; }
+             function canvasAnimatePulse(letterCount) { return { type: 'pulse', params: { ...getSimpleCanvasAnimParams(1000, 100), scaleAmount: 1.1 } }; }
+             // Fallback canvas animation
+             const canvasFallback = canvasAnimateFadeIn;
+
+
+            // --- Helper Functions ---
+            function populateSelect(selectElement, presets) { /* ... as before ... */ selectElement.innerHTML = ''; for (const key in presets) { const option = document.createElement('option'); option.value = key; option.textContent = presets[key].name; selectElement.appendChild(option); } }
+            function generateLogoHTML(text) { /* ... as before ... */ logoContainer.innerHTML = ''; text.split('').forEach(char => { const span = document.createElement('span'); span.classList.add('letter'); if (char === ' ') { span.classList.add('space'); span.innerHTML = ' '; } else { span.textContent = char; } logoContainer.appendChild(span); }); }
+
+            // Robust Reset Function
+            function resetLetters() {
+                if (currentAnimation) {
+                    anime.remove('.letter');
+                    currentAnimation = null;
+                }
+                const letters = logoContainer.querySelectorAll('.letter');
+                if (letters.length > 0) {
+                    anime.set(letters, {
+                        opacity: 0,
+                        translateX: 0, translateY: 0, translateZ: 0,
+                        scale: 1, scaleX: 1, scaleY: 1,
+                        rotateX: 0, rotateY: 0, rotateZ: 0,
+                        skewX: 0, skewY: 0,
+                        filter: 'none',
+                        color: getComputedStyle(root).getPropertyValue('--logo-color').trim(),
+                        transformOrigin: '50% 50%',
+                         backfaceVisibility: 'visible', // Reset backface visibility
+                         textShadow: 'none' // Ensure reset base shadow
+                    });
+                    anime.set('.letter.space', { opacity: 1 }); // Spaces always visible
+                    // Re-apply effects class if needed after reset
+                    body.classList.toggle('text-effects-enabled', effectsToggle.checked);
+                }
+            }
+
+            // Apply Settings and Animate DOM
+            function applySettingsAndAnimate() {
+                 if (isRecording) return; // Don't change while recording
+                 if (currentAnimation) { anime.remove('.letter'); currentAnimation = null; }
+
+                const text = textInput.value || "Animation";
+                const animationKey = animationSelect.value;
+                const fontKey = fontSelect.value;
+                const colorKey = textColorSelect.value;
+                const bgKey = bgColorSelect.value;
+                const spacingValue = spacingSlider.value;
+                const effectsEnabled = effectsToggle.checked;
+
+                // Apply Colors
+                const selectedColorPreset = colorPresets[colorKey];
+                const selectedBgPreset = colorPresets[bgKey];
+                if (selectedColorPreset) {
+                    root.style.setProperty('--logo-color', selectedColorPreset.text);
+                    root.style.setProperty('--logo-glow-color', selectedColorPreset.glow);
+                }
+                 if (selectedBgPreset) { root.style.setProperty('--bg-color', selectedBgPreset.bg); }
+
+                // Apply Font
+                const selectedFontPreset = fontPresets[fontKey];
+                if (selectedFontPreset) {
+                    root.style.setProperty('--logo-font-family', fontKey);
+                    root.style.setProperty('--logo-font-weight', selectedFontPreset.weight);
+                }
+
+                // Apply Spacing
+                root.style.setProperty('--logo-letter-spacing', `${spacingValue}em`);
+                // Update display if it existed: spacingValueDisplay.textContent = ...;
+
+                // Apply Effects Class Toggle
+                body.classList.toggle('text-effects-enabled', effectsEnabled);
+
+                // Generate HTML
+                generateLogoHTML(text);
+
+                // Reset Letters AFTER styles applied and HTML generated
+                resetLetters();
+
+                // Run DOM Animation
+                const animationData = animationPresets[animationKey];
+                if (animationData && typeof animationData.fn === 'function') {
+                    // Initial state overrides for certain animations
+                    if (['randomLetters', 'pulse', 'swing', 'tada', 'flash', 'neonFlicker'].includes(animationKey)) {
+                       anime.set('.letter:not(.space)', { opacity: 1 });
+                    } else if (animationKey === 'jello') {
+                        anime.set('.letter:not(.space)', { opacity: 1 }); // Jello starts visible then skews
+                    }
+                    currentAnimation = animationData.fn();
+                } else {
+                    console.error("DOM animation function not found:", animationKey);
+                     anime.set('.letter:not(.space)', { opacity: 1 }); // Fallback
+                }
+            }
+
+            // --- MP4 Export Logic ---
+            let mediaRecorder;
+            let recordedChunks = [];
+            let canvasAnimRequest;
+            let canvasStartTime;
+
+            function startRecording() {
+                if (!exportCanvas.captureStream) {
+                    alert('Canvas captureStream API is not supported in your browser.');
+                    return;
+                }
+                 if (isRecording) return;
+                 isRecording = true;
+                 exportMp4Button.disabled = true;
+                 exportMp4Button.textContent = 'Recording...';
+                 recordedChunks = [];
+
+                 const frameRate = 30;
+                 const stream = exportCanvas.captureStream(frameRate);
+                 mediaRecorder = new MediaRecorder(stream, {
+                     mimeType: 'video/webm;codecs=vp9', // VP9 often better quality/smaller than vp8
+                     // videoBitsPerSecond: 2500000, // Optional: Bitrate
+                 });
+
+                 mediaRecorder.ondataavailable = (event) => {
+                     if (event.data.size > 0) {
+                         recordedChunks.push(event.data);
+                     }
+                 };
+
+                 mediaRecorder.onstop = () => {
+                     const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                     const url = URL.createObjectURL(blob);
+                     const a = document.createElement('a');
+                     document.body.appendChild(a);
+                     a.style.display = 'none';
+                     a.href = url;
+                     const filename = (textInput.value || "animation").replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                     a.download = `${filename}_${animationSelect.value}.webm`; // Use webm extension
+                     a.click();
+                     window.URL.revokeObjectURL(url);
+                     document.body.removeChild(a);
+                     isRecording = false;
+                     exportMp4Button.disabled = false;
+                     exportMp4Button.textContent = 'Export MP4';
+                 };
+
+                 // --- Prepare Canvas for Drawing ---
+                 const text = textInput.value || "Pixlo";
+                 const letters = text.split('');
+                 const bgColor = getComputedStyle(root).getPropertyValue('--bg-color').trim();
+                 const textColor = getComputedStyle(root).getPropertyValue('--logo-color').trim();
+                 const fontStyle = getComputedStyle(logoContainer);
+                 const fontSize = parseInt(fontStyle.fontSize, 10); // Get base font size in px
+                 const exportFontSize = 80; // Set a fixed large font size for export canvas
+                 const scaleFactor = exportFontSize / fontSize;
+
+                 // Estimate canvas size based on text and scaled font/spacing
+                 ctx.font = `${fontStyle.fontWeight} ${exportFontSize}px ${fontStyle.fontFamily}`;
+                 ctx.textAlign = 'center';
+                 ctx.textBaseline = 'middle';
+                 const letterSpacing = parseFloat(getComputedStyle(root).getPropertyValue('--logo-letter-spacing').trim() || 0) * exportFontSize; // Spacing in px
+                 let estimatedWidth = 0;
+                 letters.forEach(char => {
+                     estimatedWidth += ctx.measureText(char).width + (char !== ' ' ? letterSpacing : (0.3 * exportFontSize) ); // Approx space width
+                 });
+                 estimatedWidth = Math.max(400, estimatedWidth + 100); // Add padding, min width
+                 const estimatedHeight = Math.max(200, exportFontSize * 2); // Min height, factor of font size
+
+                 exportCanvas.width = estimatedWidth;
+                 exportCanvas.height = estimatedHeight;
+
+                 // --- Get Simplified Canvas Animation Logic ---
+                 const animationKey = animationSelect.value;
+                 const animData = animationPresets[animationKey];
+                 const canvasAnimFn = (animData?.canvasFn) || canvasFallback; // Use specific or fallback
+                 const { type: canvasAnimType, params: canvasAnimParams } = canvasAnimFn(letters.length);
+                 canvasAnimParams.totalDuration = canvasAnimParams.duration + (letters.length - 1) * canvasAnimParams.stagger; // Calculate total time
+
+                // Start recording & animation loop
+                 mediaRecorder.start();
+                 canvasStartTime = performance.now();
+                 canvasAnimRequest = requestAnimationFrame(t => canvasAnimationLoop(t, letters, canvasAnimType, canvasAnimParams));
+            }
+
+            // Easing Functions (Simplified for Canvas)
+            function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+            function easeOutBounce(t) {
+                 const n1 = 7.5625; const d1 = 2.75;
+                 if (t < 1 / d1) { return n1 * t * t; }
+                 else if (t < 2 / d1) { return n1 * (t -= 1.5 / d1) * t + 0.75; }
+                 else if (t < 2.5 / d1) { return n1 * (t -= 2.25 / d1) * t + 0.9375; }
+                 else { return n1 * (t -= 2.625 / d1) * t + 0.984375; }
+            }
+             function easeInOutSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
+             function steps(t, numSteps = 1) { return Math.max(0, Math.min(1, Math.floor(t * numSteps) / numSteps)); }
+
+
+             // --- Canvas Animation Loop ---
+            function canvasAnimationLoop(currentTime, letters, animType, animParams) {
+                 const elapsedTime = currentTime - canvasStartTime;
+                 const { duration, stagger, totalDuration } = animParams;
+
+                 // --- Clear and Draw Background ---
+                 const bgColor = getComputedStyle(root).getPropertyValue('--bg-color').trim();
+                 ctx.fillStyle = bgColor;
+                 ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+                 // --- Setup Font & Styles ---
+                 const textColor = getComputedStyle(root).getPropertyValue('--logo-color').trim();
+                 const fontStyle = getComputedStyle(logoContainer);
+                 const exportFontSize = 80; // Must match setup
+                 ctx.font = `${fontStyle.fontWeight} ${exportFontSize}px ${fontStyle.fontFamily}`;
+                 ctx.fillStyle = textColor;
+                 ctx.textAlign = 'center';
+                 ctx.textBaseline = 'middle';
+                 const letterSpacing = parseFloat(getComputedStyle(root).getPropertyValue('--logo-letter-spacing').trim() || 0) * exportFontSize;
+                 const effectsEnabled = effectsToggle.checked; // Check if effects are on
+                 const glowColor = getComputedStyle(root).getPropertyValue('--logo-glow-color').trim();
+
+                  // Calculate total width again for centering
+                  let totalTextWidth = 0;
+                  letters.forEach(char => {
+                      totalTextWidth += ctx.measureText(char).width + (char !== ' ' ? letterSpacing : (0.3 * exportFontSize));
+                  });
+                  let currentX = (exportCanvas.width - totalTextWidth) / 2; // Start X for centering
+
+
+                 // --- Draw Each Letter Based on Animation Type ---
+                 letters.forEach((char, i) => {
+                     const delay = i * stagger;
+                     const letterStartTime = delay;
+                     const letterEndTime = letterStartTime + duration;
+                     const letterProgress = Math.max(0, Math.min(1, (elapsedTime - letterStartTime) / duration));
+
+                     // Apply Easing (Example - needs more based on animType)
+                     let easedProgress = easeOutExpo(letterProgress); // Default easing
+                     if (animParams.easing === 'steps(1)') easedProgress = steps(letterProgress, 1);
+                     if (animParams.easing === 'outBounce') easedProgress = easeOutBounce(letterProgress);
+                     if (animParams.easing === 'sine') easedProgress = easeInOutSine(letterProgress);
+
+                     // Calculate letter properties based on progress and animType
+                     let alpha = 0, xOffset = 0, yOffset = 0, scale = 1, rotation = 0;
+                     const charWidth = ctx.measureText(char).width;
+                     const charDrawX = currentX + charWidth / 2; // Center of the current char position
+                     const charDrawY = exportCanvas.height / 2;
+
+
+                     // --- Apply Animation Logic (Simplified Examples) ---
+                     switch (animType) {
+                         case 'fade-in':
+                             alpha = easedProgress;
+                             break;
+                         case 'fade-translate':
+                             alpha = easedProgress;
+                             xOffset = animParams.startX ? (animParams.startX + (animParams.endX - animParams.startX) * easedProgress) : 0;
+                             yOffset = animParams.startY ? (animParams.startY + (animParams.endY - animParams.startY) * easedProgress) : 0;
+                             break;
+                         case 'fade-scale':
+                              alpha = easedProgress;
+                              scale = animParams.startScale + (animParams.endScale - animParams.startScale) * easedProgress;
+                              break;
+                         case 'fade-wave':
+                              alpha = easedProgress;
+                              yOffset = Math.sin(letterProgress * Math.PI * 2 + i * 0.5) * animParams.amplitude * (1 - easedProgress); // Wave diminishes
+                              break;
+                         case 'fade-rotate': // Simple Z rotation, ignores X/Y for basic canvas
+                             alpha = easedProgress;
+                             rotation = animParams.startRotZ ? (animParams.startRotZ + (animParams.endRotZ - animParams.startRotZ) * easedProgress) : 0;
+                             if(animParams.startRotY) scale = Math.abs(Math.cos(letterProgress * Math.PI / 2)); // Fake Y rot with X scale
+                             break;
+                          case 'scatter-gather':
+                             alpha = easedProgress;
+                             // Need initial random positions stored or generated consistently
+                             const initialX = (i - letters.length / 2) * animParams.range * 1.5; // Example initial pos
+                             const initialY = (Math.random() - 0.5) * animParams.range * 2;
+                             xOffset = initialX * (1 - easedProgress);
+                             yOffset = initialY * (1 - easedProgress);
+                             scale = 0.5 + 0.5 * easedProgress;
+                             break;
+                         case 'fade-in-out':
+                             const fadeInDur = duration * 0.4;
+                             const fadeOutStart = duration * 0.4 + animParams.hold;
+                             const fadeOutDur = duration * 0.6;
+                             if(elapsedTime < letterStartTime + fadeInDur) {
+                                 alpha = Math.min(1, (elapsedTime - letterStartTime) / fadeInDur);
+                             } else if (elapsedTime < letterStartTime + fadeOutStart) {
+                                 alpha = 1;
+                             } else if (elapsedTime < letterStartTime + fadeOutStart + fadeOutDur) {
+                                 alpha = 1 - Math.min(1, (elapsedTime - (letterStartTime + fadeOutStart)) / fadeOutDur);
+                             } else { alpha = 0; }
+                              alpha = Math.max(0, alpha); // Clamp alpha
+                              break;
+                         case 'flash':
+                             const flashTime = elapsedTime - letterStartTime;
+                              if (flashTime < 0) alpha = 0;
+                              else {
+                                 const flashCycle = duration / (animParams.flashes * 2);
+                                 alpha = (Math.floor(flashTime / flashCycle) % 2 === 0) ? 1 : 0; // Alternate 0 and 1
+                                 alpha = Math.min(1, letterProgress > 0 ? alpha : 0); // Only flash if progress started
+                              }
+                              break;
+                         case 'pulse':
+                             alpha = 1; // Always visible for pulse
+                             const pulseProgress = Math.sin(letterProgress * Math.PI * 2); // Simple pulse cycle
+                             scale = 1 + (animParams.scaleAmount - 1) * Math.max(0, pulseProgress);
+                              break;
+
+                         default: // Fallback: simple fade-in
+                             alpha = easedProgress;
+                     }
+
+
+                     // --- Draw Letter ---
+                     if (char !== ' ' && alpha > 0) {
+                         ctx.save();
+                         ctx.globalAlpha = alpha;
+                         ctx.translate(charDrawX + xOffset, charDrawY + yOffset);
+                         ctx.rotate(rotation * Math.PI / 180);
+                         ctx.scale(scale, scale);
+
+                          // Apply shadow if enabled
+                         if (effectsEnabled) {
+                             ctx.shadowColor = glowColor;
+                             ctx.shadowBlur = 8; // Adjust blur level
+                             ctx.shadowOffsetX = 0;
+                             ctx.shadowOffsetY = 0;
+                         } else {
+                             ctx.shadowColor = 'transparent'; // Disable shadow
+                             ctx.shadowBlur = 0;
+                         }
+
+                         ctx.fillText(char, 0, 0); // Draw centered at translated origin
+                         ctx.restore();
+                     }
+
+                      // Update currentX for the next letter
+                     currentX += charWidth + (char !== ' ' ? letterSpacing : (0.3 * exportFontSize));
+
+                 }); // End forEach letter
+
+                 // --- Continue or Stop Animation ---
+                 if (elapsedTime < totalDuration + 500) { // Record a bit longer
+                     canvasAnimRequest = requestAnimationFrame(t => canvasAnimationLoop(t, letters, animType, animParams));
+                 } else {
+                     stopRecording();
+                 }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state === "recording") {
+                    mediaRecorder.stop(); // Triggers the onstop event
+                }
+                if (canvasAnimRequest) {
+                    cancelAnimationFrame(canvasAnimRequest);
+                    canvasAnimRequest = null;
+                }
+                // No need to manually set isRecording = false here, onstop handles it
+            }
+
+
+            // --- Event Listeners ---
+            applyButton.addEventListener('click', applySettingsAndAnimate);
+
+            spacingSlider.addEventListener('input', (e) => {
+                if (isRecording) return; // Prevent changes while recording
+                const value = e.target.value;
+                root.style.setProperty('--logo-letter-spacing', `${value}em`);
+                // Update display if it existed: spacingValueDisplay.textContent = ...;
+            });
+
+             effectsToggle.addEventListener('change', (e) => {
+                 if (isRecording) return;
+                 body.classList.toggle('text-effects-enabled', e.target.checked);
+                 // Note: applySettingsAndAnimate() is NOT called here for instant toggle
+                 // Reset might briefly remove shadow, but it reapplies via classList toggle
+                 // Or, could force a minor style update if needed
+             });
+
+             exportMp4Button.addEventListener('click', () => {
+                 if (!isRecording) {
+                     startRecording();
+                 }
+             });
+
+
+            // --- Initialization ---
+            populateSelect(animationSelect, animationPresets);
+            populateSelect(fontSelect, fontPresets);
+            populateSelect(textColorSelect, colorPresets);
+            populateSelect(bgColorSelect, colorPresets);
+
+            // Set initial defaults
+            textColorSelect.value = 'cyberpunk'; // Changed default
+            bgColorSelect.value = 'cyberpunk'; // Changed default
+            fontSelect.value = "'Poppins', sans-serif"; // Changed default
+            animationSelect.value = 'elasticPop'; // Changed default
+            spacingSlider.value = 0.1; // Default spacing
+            effectsToggle.checked = true; // Default effects on
+
+            // Initial Load
+            applySettingsAndAnimate(); // Apply settings and run DOM animation
+
+        });
+    </script>
+
+</body>
+</html>
